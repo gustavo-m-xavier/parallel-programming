@@ -9,6 +9,7 @@ d) Compare os resultados e explique por que a diretiva reduction é necessária.
 #include <iostream>
 #include <omp.h>
 #include <vector>
+#include <cassert>
 
 int main(){
 
