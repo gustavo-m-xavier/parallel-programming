@@ -1,9 +1,8 @@
 /*
 Exercício 4 — Medindo tempo por thread
-Adapte o código do exercício anterior para:
-a) Medir e exibir o tempo total de execução.
-b) Medir e exibir o tempo gasto por cada thread.
-c) Mostrar quantas threads foram utilizadas no cálculo.
+a) Medir tempo total de execução.
+b) Medir tempo gasto por cada thread.
+c) Mostrar quantas threads foram utilizadas.
 */
 
 #include <iostream>
@@ -18,15 +17,17 @@ int main(){
     std::vector<double> z(N, 3.0);
     std::vector<double> a(N, 0.0);
 
-    double start_total = omp_get_wtime();
+    double start_total = omp_get_wtime(); // tempo total começa aqui
 
+    // Região paralela: várias threads vão entrar aqui
     #pragma omp parallel 
     {
-        int tid = omp_get_thread_num();
-        int tot = omp_get_num_threads();
+        int tid = omp_get_thread_num();   // id da thread
+        int tot = omp_get_num_threads();  // número total de threads
 
-        double start_thread = omp_get_wtime();
+        double start_thread = omp_get_wtime(); // tempo inicial da thread
 
+        // Distribui as iterações entre as threads
         #pragma omp for schedule(static)
         for(int i = 0; i < N; i++){
             a[i] = x[i]*x[i] + y[i]*y[i] + z[i]*z[i];
@@ -35,6 +36,7 @@ int main(){
         double end_thread = omp_get_wtime();
         double time_thread = end_thread - start_thread;
 
+        // "critical" garante que só uma thread por vez imprime no console
         #pragma omp critical
         {
             std::cout << "Thread " << tid << " de " << tot 

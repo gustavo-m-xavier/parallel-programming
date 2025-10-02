@@ -9,20 +9,25 @@ d) Compare os resultados e explique por que a diretiva reduction é necessária.
 #include <iostream>
 #include <omp.h>
 #include <vector>
-#include <cassert>
+#include <cassert>  // para validar se o resultado paralelo == sequencial
 
 int main(){
 
-    const int N = 100;
-    std::vector<int> v(N, 1);
+    const int N = 100;  
+    std::vector<int> v(N, 1); // vetor com 100 posições, todas valendo 1
 
+    // ---- Soma sequencial ----
     int soma_seq = 0;
     for(int i = 0; i < N; i++){
         soma_seq += v[i];
     }
 
+    // ---- Soma paralela ----
     int soma_par = 0;
 
+    // A diretiva "parallel for" divide as iterações do loop entre as threads
+    // O "reduction(+:soma_par)" faz cada thread calcular sua própria soma parcial
+    // e depois combina tudo na variável soma_par de forma correta.
     #pragma omp parallel for reduction(+:soma_par)
     for(int i = 0; i < N; i++){
         soma_par += v[i];

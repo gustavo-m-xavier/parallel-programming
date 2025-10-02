@@ -1,9 +1,10 @@
 /*
 Exercício 5 — Escalonamento
-Use novamente o cálculo de a[i] = x[i]^2 + y[i]^2 + z[i]^2, mas:
-a) Execute com schedule(static) e schedule(dynamic, 1000).
-b) Compare os tempos em diferentes quantidades de threads (2, 4, 8).
-c) Explique em quais situações static e dynamic são mais adequados.
+a) Cálculo de a[i] = x² + y² + z² com schedule(static) e schedule(dynamic, 1000).
+b) Comparar com 2, 4 e 8 threads.
+c) Explicar diferenças:
+   - static → divide as iterações de forma fixa entre as threads (bom quando todas as iterações custam igual).
+   - dynamic → as threads pegam blocos de iterações conforme terminam (bom quando as iterações têm custos variáveis).
 */
 
 #include <iostream>
@@ -18,9 +19,11 @@ int main(){
     std::vector<double> z(N, 3.0);
     std::vector<double> a(N, 0.0);
 
+    // Testa para diferentes quantidades de threads
     for(int num_threads : {2, 4, 8}) {
         std::cout << "Número de threads: " << num_threads << "\n";
 
+        // ---- Escalonamento estático ----
         double start_static = omp_get_wtime();
         #pragma omp parallel for schedule(static) num_threads(num_threads)
         for(int i = 0; i < N; i++){
@@ -31,6 +34,7 @@ int main(){
 
         std::cout << "Tempo com schedule(static): " << time_static << " segundos\n";
 
+        // ---- Escalonamento dinâmico ----
         double start_dynamic = omp_get_wtime();
         #pragma omp parallel for schedule(dynamic, 1000) num_threads(num_threads)
         for(int i = 0; i < N; i++){
